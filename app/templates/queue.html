@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="status-tabs">
+  {% for st in statuses %}
+    <a class="tab {% if st == current_status %}active{% endif %}"
+       href="/?status={{ st }}">
+      {{ st|capitalize }}
+      {% if counts.get(st) %}<span class="count">{{ counts.get(st) }}</span>{% endif %}
+    </a>
+  {% endfor %}
+</nav>
+
+<h1>{{ current_status|capitalize }} posts</h1>
+
+{% if not suggestions %}
+  <p class="empty">
+    No posts in this queue. Click <strong>Run daily pipeline</strong> to discover
+    fresh PR topics, then come back to review them.
+  </p>
+{% endif %}
+
+<div class="cards">
+  {% for s in suggestions %}
+    {% include "_suggestion_card.html" %}
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+<article class="card" id="suggestion-{{ s.id }}">
+  <div class="card-media">
+    {% if s.selected_image %}
+      <img src="{{ s.selected_image.thumb_url }}" alt="post image"
+           loading="lazy" referrerpolicy="no-referrer">
+    {% else %}
+      <div class="no-image">No image</div>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="badge badge-{{ s.status.value if s.status.value is defined else s.status }}">
+        {{ (s.status.value if s.status.value is defined else s.status)|capitalize }}
+      </span>
+      <span class="score" title="Prominence / relevance score">
+        ★ {{ '%.2f'|format(s.rank_score) }}
+      </span>
+      <span class="source">{{ s.article.domain }}</span>
+    </div>
+    <h3 class="card-title">
+      <a href="{{ s.article.url }}" target="_blank" rel="noreferrer">{{ s.article.title }}</a>
+    </h3>
+    <p class="caption-preview">{{ s.effective_caption }}</p>
+    {% if s.hashtags %}
+      <p class="hashtags">{% for h in s.hashtags %}#{{ h }} {% endfor %}</p>
+    {% endif %}
+    {% if s.error_message %}
+      <p class="error">⚠ {{ s.error_message }}</p>
+    {% endif %}
+
+    <div class="card-actions">
+      <a class="btn" href="/suggestions/{{ s.id }}">Review &amp; edit</a>
+      {% set st = s.status.value if s.status.value is defined else s.status %}
+      {% if st in ['suggested', 'approved'] %}
+        <button class="btn btn-success"
+                hx-post="/suggestions/{{ s.id }}/approve"
+                hx-target="#suggestion-{{ s.id }}" hx-swap="outerHTML">Approve</button>
+      {% endif %}
+      {% if st in ['approved', 'failed'] %}
+        <button class="btn btn-primary"
+                hx-post="/suggestions/{{ s.id }}/publish"
+                hx-target="#suggestion-{{ s.id }}" hx-swap="outerHTML">Publish</button>
+      {% endif %}
+      {% if st in ['suggested', 'approved'] %}
+        <button class="btn btn-danger"
+                hx-post="/suggestions/{{ s.id }}/reject"
+                hx-target="#suggestion-{{ s.id }}" hx-swap="outerHTML">Reject</button>
+      {% endif %}
+    </div>
+  </div>
+</article>

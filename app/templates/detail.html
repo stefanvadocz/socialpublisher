@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Review — {{ s.article.title }}{% endblock %}
+{% block content %}
+<p><a href="/" class="back">← Back to queue</a></p>
+
+<div class="detail">
+  <div class="detail-main">
+    <div class="card-meta">
+      {% set st = s.status.value if s.status.value is defined else s.status %}
+      <span class="badge badge-{{ st }}">{{ st|capitalize }}</span>
+      <span class="score">★ {{ '%.2f'|format(s.rank_score) }} prominence</span>
+      <span class="source">{{ s.article.domain }}</span>
+    </div>
+    <h1>{{ s.article.title }}</h1>
+    <p class="source-link">
+      Source: <a href="{{ s.article.url }}" target="_blank" rel="noreferrer">{{ s.article.url }}</a>
+    </p>
+    {% if s.article.snippet %}<blockquote>{{ s.article.snippet }}</blockquote>{% endif %}
+
+    <h2>Caption</h2>
+    <form hx-post="/suggestions/{{ s.id }}/edit"
+          hx-target="#card-slot" hx-swap="innerHTML">
+      <textarea name="caption" rows="8" class="caption-input">{{ s.effective_caption }}</textarea>
+      <label class="field-label">Hashtags (space or comma separated)</label>
+      <input type="text" name="hashtags" class="hashtag-input"
+             value="{% for h in s.hashtags %}{{ h }} {% endfor %}">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save edits</button>
+      </div>
+    </form>
+
+    <h2>Image</h2>
+    <p class="hint">Click an image to use it for this post.</p>
+    {% include "_image_picker.html" %}
+
+    <div class="card-actions detail-actions">
+      {% if st in ['suggested', 'approved'] %}
+        <button class="btn btn-success" hx-post="/suggestions/{{ s.id }}/approve"
+                hx-target="#card-slot" hx-swap="innerHTML">Approve</button>
+        <button class="btn btn-danger" hx-post="/suggestions/{{ s.id }}/reject"
+                hx-target="#card-slot" hx-swap="innerHTML">Reject</button>
+      {% endif %}
+      {% if st in ['approved', 'failed'] %}
+        <button class="btn btn-primary" hx-post="/suggestions/{{ s.id }}/publish"
+                hx-target="#card-slot" hx-swap="innerHTML">Publish now</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <aside class="detail-side">
+    <h2>Current state</h2>
+    <div id="card-slot">{% include "_suggestion_card.html" %}</div>
+    {% if s.attempts %}
+      <h2>Publish history</h2>
+      <ul class="attempts">
+        {% for a in s.attempts %}
+          <li>
+            <strong>{{ a.platform.value if a.platform.value is defined else a.platform }}</strong>
+            — {{ a.status.value if a.status.value is defined else a.status }}
+            {% if a.external_post_id %}<code>{{ a.external_post_id }}</code>{% endif %}
+            {% if a.error_message %}<span class="error">{{ a.error_message }}</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

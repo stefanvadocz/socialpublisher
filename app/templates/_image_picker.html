@@ -1,0 +1,17 @@
+<div class="image-picker" id="image-picker-{{ s.id }}">
+  {% for img in s.images %}
+    <form hx-post="/suggestions/{{ s.id }}/image"
+          hx-target="#image-picker-{{ s.id }}" hx-swap="outerHTML"
+          class="image-option {% if img.is_selected %}selected{% endif %}">
+      <input type="hidden" name="image_id" value="{{ img.id }}">
+      <button type="submit" class="image-button" title="{{ img.attribution }}">
+        <img src="{{ img.thumb_url }}" alt="candidate" loading="lazy"
+             referrerpolicy="no-referrer">
+        {% if img.is_selected %}<span class="selected-tag">Selected</span>{% endif %}
+      </button>
+      <small class="attribution">{{ img.attribution }}</small>
+    </form>
+  {% else %}
+    <p class="empty">No image candidates.</p>
+  {% endfor %}
+</div>

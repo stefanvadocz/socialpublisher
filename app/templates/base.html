@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PR Social Publisher{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <!-- htmx from a pinned CDN. To run fully offline, drop htmx.min.js into
+       app/static/ and change this src to "/static/htmx.min.js". -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"
+          integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+          crossorigin="anonymous" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">📣 PR Social Publisher</a>
+    <form method="post" action="/jobs/run-daily" class="run-form"
+          hx-post="/jobs/run-daily" hx-swap="none"
+          hx-on::after-request="window.location.reload()">
+      <button type="submit" class="btn btn-primary">Run daily pipeline</button>
+    </form>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
