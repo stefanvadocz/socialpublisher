@@ -1,0 +1,24 @@
+# Render.com blueprint. In Render: New + → Blueprint → connect this repo → Apply.
+# Spins up a free public web service running the app with demo data seeded.
+services:
+  - type: web
+    name: pr-social-publisher
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Seed demo posts on first boot so the review queue isn't empty.
+      - key: SEED_ON_START
+        value: "true"
+      # Flip these to go live (and add the matching API keys in the dashboard):
+      # - key: CAPTION_PROVIDER
+      #   value: claude
+      # - key: ANTHROPIC_API_KEY
+      #   sync: false
+      # - key: IMAGE_PROVIDER
+      #   value: unsplash
+      # - key: UNSPLASH_ACCESS_KEY
+      #   sync: false

@@ -25,6 +25,17 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    if get_settings().seed_on_start:
+        from app.db import SessionLocal
+        from app.demo_seed import seed_if_empty
+
+        db = SessionLocal()
+        try:
+            created = seed_if_empty(db)
+            if created:
+                logger.info("Seeded %d demo suggestions on startup", created)
+        finally:
+            db.close()
     start_scheduler()
     logger.info("PR Social Publisher %s started", __version__)
     try:

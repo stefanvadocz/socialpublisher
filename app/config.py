@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./app.db"
     timezone: str = "America/Toronto"
     daily_run_hour: int = 7
+    # When true, insert demo posts on startup if the DB is empty (handy for
+    # a fresh cloud deploy so the queue isn't blank on first load).
+    seed_on_start: bool = False
 
     # Provider selection
     search_provider: str = "rss"  # rss | firecrawl | exa
